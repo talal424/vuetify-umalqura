@@ -8,7 +8,7 @@ import VHijriDatePickerMonthTable from './VHijriDatePickerMonthTable'
 
 import VHijriDatePickerDateTable from './VHijriDatePickerDateTable'
 
-import { createFormatter, pad, createItemTypeListeners, daysInMonth } from './util';
+import { createFormatter, pad, createItemTypeListeners, daysInMonth, wrapInArray } from './util';
 
 function sanitizeDateString(dateString, type) {
     const [year, month = 1, date = 1] = dateString.split("-");
@@ -53,7 +53,8 @@ export default {
                     return this.pickerDate;
                 }
 
-                const date = (this.multiple || this.range ? this.value[this.value.length - 1] : this.value) || (typeof this.showCurrent === 'string' ? this.showCurrent : `${now.hy}-${now.hm}`);
+                const multipleValue = wrapInArray(this.value)
+                const date = multipleValue[multipleValue.length - 1] || (typeof this.showCurrent === 'string' ? this.showCurrent : `${now.hy}-${now.hm}`)
                 return sanitizeDateString(date, this.type === 'date' ? 'month' : 'year');
             })(),
         };
