@@ -195,6 +195,7 @@ export default {
                     range: this.range,
                     readonly: this.readonly,
                     scrollable: this.scrollable,
+                    showAdjacentMonths: this.showAdjacentMonths,
                     showWeek: this.showWeek,
                     tableDate: `${pad(this.tableYear, 4)}-${pad(this.tableMonth + 1)}`,
                     value: this.value,
