@@ -21,6 +21,7 @@ export default {
         'vuetify/lib',
         '@umalqura/core',
         'vuetify/lib/components/VDatePicker/util',
-        'vuetify/lib/components/VDatePicker/util/isDateAllowed'
+        'vuetify/lib/components/VDatePicker/util/isDateAllowed',
+        'vuetify/lib/util/helpers'
     ]
 }
