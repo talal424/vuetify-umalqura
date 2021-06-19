@@ -1,6 +1,6 @@
 {
   "name": "vuetify-umalqura",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "a vuetify date picker for umalqura calendar",
   "main": "dist/v-hijri-date-picker.esm.js",
   "module": "dist/v-hijri-date-picker.esm.js",
@@ -40,7 +40,7 @@
   },
   "peerDependencies": {
     "vue": "^2.6.11",
-    "vuetify": "^2.4.4",
+    "vuetify": "^2.5.4",
     "@umalqura/core": "0.0.7"
   }
 }

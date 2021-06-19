@@ -32,6 +32,7 @@ export default {
             const prevMonthYear = this.displayedMonth === 1 ? this.displayedYear - 1 : this.displayedYear;
             const prevMonth = this.displayedMonth === 1 ? 12 : this.displayedMonth - 1;
             const firstDayFromPreviousMonth = daysInMonth(prevMonthYear, prevMonth);
+            const cellsInRow = this.showWeek ? 8 : 7
     
             while (day--) {
                 const date = `${prevMonthYear}-${pad(prevMonth)}-${pad(firstDayFromPreviousMonth - day)}`;
@@ -42,11 +43,11 @@ export default {
                 const date = `${this.displayedYear}-${pad(this.displayedMonth)}-${pad(day)}`;
                 rows.push(this.$createElement('td', [this.genButton(date, true, 'date', this.formatter)]));
     
-                if (rows.length % (this.showWeek ? 8 : 7) === 0) {
+                if (rows.length % cellsInRow === 0) {
                     children.push(this.genTR(rows));
                     rows = [];
         
-                    if (this.showWeek && day < daysInCurrentMonth) {
+                    if (this.showWeek && (day < daysInCurrentMonth || this.showAdjacentMonths)) {
                         rows.push(this.genWeekNumber(this.getWeekNumber((day + 7) > daysInCurrentMonth ? daysInCurrentMonth : (day + 7))));
                     }
                 }
@@ -56,7 +57,7 @@ export default {
             const nextMonth = this.displayedMonth === 12 ? 1 : this.displayedMonth + 1;
             let nextMonthDay = 1;
 
-            while (rows.length < 7) {
+            while (rows.length < cellsInRow) {
                 const date = `${nextMonthYear}-${pad(nextMonth)}-${pad(nextMonthDay++)}`;
                 rows.push(this.$createElement('td', this.showAdjacentMonths ? [this.genButton(date, true, 'date', this.formatter, true)] : []));
             }

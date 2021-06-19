@@ -42,7 +42,7 @@ export default {
     data() {
         const now = umalqura();
         return {
-            activePicker: this.type.toUpperCase(),
+            internalActivePicker: this.type.toUpperCase(),
             inputDay: null,
             inputMonth: null,
             inputYear: null,
@@ -116,7 +116,7 @@ export default {
                 this.tableDate = `${value}-${pad(this.tableMonth || 1)}`;
             }
     
-            this.activePicker = 'MONTH';
+            this.internalActivePicker = 'MONTH';
     
             if (this.reactive && !this.readonly && !this.isMultiple && this.isDateAllowed(this.inputDate)) {
                 this.$emit('input', this.inputDate);
@@ -133,7 +133,7 @@ export default {
                 }
     
                 this.tableDate = value;
-                this.activePicker = 'DATE';
+                this.internalActivePicker = 'DATE';
     
                 if (this.reactive && !this.readonly && !this.isMultiple && this.isDateAllowed(this.inputDate)) {
                     this.$emit('input', this.inputDate);
@@ -160,16 +160,16 @@ export default {
                     format: this.headerDateFormat,
                     light: this.light,
                     locale: this.locale,
-                    min: this.activePicker === 'DATE' ? this.minMonth : this.minYear,
-                    max: this.activePicker === 'DATE' ? this.maxMonth : this.maxYear,
-                    nextAriaLabel: this.activePicker === 'DATE' ? this.nextMonthAriaLabel : this.nextYearAriaLabel,
-                    prevAriaLabel: this.activePicker === 'DATE' ? this.prevMonthAriaLabel : this.prevYearAriaLabel,
+                    min: this.internalActivePicker === 'DATE' ? this.minMonth : this.minYear,
+                    max: this.internalActivePicker === 'DATE' ? this.maxMonth : this.maxYear,
+                    nextAriaLabel: this.internalActivePicker === 'DATE' ? this.nextMonthAriaLabel : this.nextYearAriaLabel,
+                    prevAriaLabel: this.internalActivePicker === 'DATE' ? this.prevMonthAriaLabel : this.prevYearAriaLabel,
                     prevIcon: this.prevIcon,
                     readonly: this.readonly,
-                    value: this.activePicker === 'DATE' ? `${pad(this.tableYear, 4)}-${pad(this.tableMonth)}` : `${pad(this.tableYear, 4)}`
+                    value: this.internalActivePicker === 'DATE' ? `${pad(this.tableYear, 4)}-${pad(this.tableMonth)}` : `${pad(this.tableYear, 4)}`
                 },
                 on: {
-                    toggle: () => this.activePicker = this.activePicker === 'DATE' ? 'MONTH' : 'YEAR',
+                    toggle: () => this.internalActivePicker = this.internalActivePicker === 'DATE' ? 'MONTH' : 'YEAR',
                     input: value => this.tableDate = value
                 }
             });
