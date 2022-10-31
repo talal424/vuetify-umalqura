@@ -8,6 +8,8 @@ import VHijriDatePickerMonthTable from './VHijriDatePickerMonthTable'
 
 import VHijriDatePickerDateTable from './VHijriDatePickerDateTable'
 
+import VHijriDatePickerYearItems from './VHijriDatePickerDateTable'
+
 import { createFormatter, pad, createItemTypeListeners, daysInMonth, wrapInArray } from './util';
 
 function sanitizeDateString(dateString, type) {
@@ -236,6 +238,34 @@ export default {
                     input: this.monthClick,
                     'update:table-date': value => this.tableDate = value,
                     ...createItemTypeListeners(this, ':month')
+                }
+            });
+        },
+
+        genYears() {
+            return this.$createElement(VHijriDatePickerYearItems, {
+                props: {
+                    allowedDates: this.type === 'year' ? this.allowedDates : null,
+                    color: this.color,
+                    current: this.current ? sanitizeDateString(this.current, 'year') : null,
+                    dark: this.dark,
+                    disabled: this.disabled,
+                    events: this.type === 'year' ? this.events : null,
+                    eventColor: this.type === 'year' ? this.eventColor : null,
+                    light: this.light,
+                    locale: this.locale,
+                    min: this.minMonth,
+                    max: this.maxMonth,
+                    range: this.range,
+                    readonly: this.readonly && this.type === 'year',
+                    scrollable: this.scrollable,
+                    value: this.selectedMonths,
+                },
+                ref: 'table',
+                on: {
+                    input: this.yearClick,
+                    'update:table-date': value => this.tableDate = value,
+                    ...createItemTypeListeners(this, ':year')
                 }
             });
         },
