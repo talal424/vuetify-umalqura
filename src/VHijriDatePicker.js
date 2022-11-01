@@ -8,7 +8,7 @@ import VHijriDatePickerMonthTable from './VHijriDatePickerMonthTable'
 
 import VHijriDatePickerDateTable from './VHijriDatePickerDateTable'
 
-import VHijriDatePickerYearItems from './VHijriDatePickerDateTable'
+import VHijriDatePickerYearItems from './VHijriDatePickerYearItems'
 
 import { createFormatter, pad, createItemTypeListeners, daysInMonth, wrapInArray } from './util';
 

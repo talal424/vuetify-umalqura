@@ -1,4 +1,4 @@
-import { VDatePickerHeader, VDatePickerMonthTable, VDatePickerDateTable, VDatePicker } from 'vuetify/lib';
+import { VDatePickerHeader, VDatePickerMonthTable, VDatePickerDateTable, VDatePickerYears, VDatePicker } from 'vuetify/lib';
 import umalqura from '@umalqura/core';
 import { pad, createItemTypeListeners } from 'vuetify/lib/components/VDatePicker/util';
 import isDateAllowed from 'vuetify/lib/components/VDatePicker/util/isDateAllowed';
@@ -98,7 +98,7 @@ var VHijriDatePickerMonthTable = {
     }
 };
 
-var VHijriDatePickerYearItems = {
+var VHijriDatePickerDateTable = {
     extends: VDatePickerDateTable,
     computed: {
         formatter() {
@@ -165,6 +165,15 @@ var VHijriDatePickerYearItems = {
             return this.$createElement('tbody', children);
         },
     }
+};
+
+var VHijriDatePickerYearItems = {
+    extends: VDatePickerYears,
+    computed: {
+        formatter() {
+            return this.format || createFormatter('year', this.currentLocale);
+        }
+    },
 };
 
 function sanitizeDateString(dateString, type) {
@@ -333,7 +342,7 @@ var VHijriDatePicker = {
         },
 
         genDateTable() {
-            return this.$createElement(VHijriDatePickerYearItems, {
+            return this.$createElement(VHijriDatePickerDateTable, {
                 props: {
                     allowedDates: this.allowedDates,
                     color: this.color,
