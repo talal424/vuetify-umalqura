@@ -1,16 +1,180 @@
-import { VDatePicker } from "vuetify/lib";
-
+import { VDatePickerHeader, VDatePickerMonthTable, VDatePickerDateTable, VDatePickerYears, VDatePicker } from 'vuetify/lib';
 import umalqura from '@umalqura/core';
+import { pad, createItemTypeListeners } from 'vuetify/lib/components/VDatePicker/util';
+import isDateAllowed from 'vuetify/lib/components/VDatePicker/util/isDateAllowed';
+import { wrapInArray } from 'vuetify/lib/util/helpers';
 
-import VHijriDatePickerHeader from './VHijriDatePickerHeader'
+function createFormatter(type, locale) {
+    return dateString => {
+        const [year, month, date] = dateString.trim().split(' ')[0].split('-');
 
-import VHijriDatePickerMonthTable from './VHijriDatePickerMonthTable'
+        if (type === 'day') {
+            return umalqura(year, month, date).format('d', locale)
+        }
+        
+        if (type === 'year') {
+            return year
+        }
+    
+        if (type === 'month') {
+            return umalqura(year, month, 1).format('MMMM', locale)
+        }
 
-import VHijriDatePickerDateTable from './VHijriDatePickerDateTable'
+        if (type === 'date') {
+            return umalqura(year, month, date).format(locale === 'ar' ? 'dddd, d MMM' : 'ddd, MMM d', locale)
+        }
 
-import VHijriDatePickerYearItems from './VHijriDatePickerYearItems'
+        if (type === 'monthYear') {
+            return umalqura(year, month, 1).format('MMMM yyyy', locale)
+        }
+    }
+}
 
-import { createFormatter, pad, createItemTypeListeners, daysInMonth, wrapInArray } from './util';
+function daysInMonth(year, month){
+    return umalqura(year, month, 1).daysInMonth
+}
+
+function firstDayOfTheMonth(year, month) {
+    return umalqura(year, month, 1).dayOfWeek
+}
+
+function weekOfYear(year, month, date) {
+    return umalqura(year, month, date).weekOfYear
+}
+
+var VHijriDatePickerHeader = {
+    extends: VDatePickerHeader,
+    computed: {
+        formatter() {
+            return this.format || createFormatter(String(this.value).split('-')[1] ? 'monthYear' : 'year', this.currentLocale);
+        }
+    },
+};
+
+var VHijriDatePickerMonthTable = {
+    extends: VDatePickerMonthTable,
+    computed: {
+        formatter() {
+            return this.format || createFormatter('month', this.currentLocale);
+        }
+    },
+    methods: {
+        genTBody() {
+            const children = [];
+            const cols = Array(3).fill(null);
+            const rows = 12 / cols.length;
+    
+            for (let row = 0; row < rows; row++) {
+                const tds = cols.map((_, col) => {
+                    const month = row * cols.length + col;
+                    const date = `${this.displayedYear}-${pad(month + 1)}`;
+                    return this.$createElement('td', { key: month }, [this.genButton(date, false, 'month', this.formatter)]);
+                });
+                children.push(this.$createElement('tr', { key: row }, tds));
+            }
+    
+            return this.$createElement('tbody', children);
+        },
+        genButton(value, isFloating, mouseEventType, formatter) {
+            const isAllowed = isDateAllowed(value, this.min, this.max, this.allowedDates);
+            const isSelected = this.isSelected(value) && isAllowed;
+            const isCurrent = value === this.current;
+            const setColor = isSelected ? this.setBackgroundColor : this.setTextColor;
+            const color = (isSelected || isCurrent) && (this.color || 'accent');
+            return this.$createElement('button', setColor(color, {
+                staticClass: 'v-btn',
+                class: this.genButtonClasses(isAllowed, isFloating, isSelected, isCurrent),
+                attrs: {
+                    type: 'button'
+                },
+                domProps: {
+                    disabled: this.disabled || !isAllowed
+                },
+                on: this.genButtonEvents(value, isAllowed, mouseEventType)
+            }), [this.$createElement('div', {
+                staticClass: 'v-btn__content'
+            }, [formatter(value)]), this.genEvents(value)]);
+        },
+    }
+};
+
+var VHijriDatePickerDateTable = {
+    extends: VDatePickerDateTable,
+    computed: {
+        formatter() {
+            return this.format || createFormatter('day', this.currentLocale);
+        },
+    },
+    methods: {
+        weekDaysBeforeFirstDayOfTheMonth() {
+            const weekDay = firstDayOfTheMonth(this.displayedYear, this.displayedMonth);
+            return (weekDay - parseInt(this.firstDayOfWeek) + 7) % 7;
+        },
+
+        getWeekNumber(dayInMonth) {
+            return weekOfYear(this.displayedYear, this.displayedMonth, dayInMonth)
+        },
+
+        genTBody() {
+            const children = [];
+            const daysInCurrentMonth = daysInMonth(this.displayedYear, this.displayedMonth);
+            let rows = [];
+            let day = this.weekDaysBeforeFirstDayOfTheMonth();
+    
+            if (this.showWeek) {
+                rows.push(this.genWeekNumber(this.getWeekNumber(1)));
+            }
+
+            const prevMonthYear = this.displayedMonth === 1 ? this.displayedYear - 1 : this.displayedYear;
+            const prevMonth = this.displayedMonth === 1 ? 12 : this.displayedMonth - 1;
+            const firstDayFromPreviousMonth = daysInMonth(prevMonthYear, prevMonth);
+            const cellsInRow = this.showWeek ? 8 : 7;
+    
+            while (day--) {
+                const date = `${prevMonthYear}-${pad(prevMonth)}-${pad(firstDayFromPreviousMonth - day)}`;
+                rows.push(this.$createElement('td', this.showAdjacentMonths ? [this.genButton(date, true, 'date', this.formatter, true)] : []));
+            }
+    
+            for (day = 1; day <= daysInCurrentMonth; day++) {
+                const date = `${this.displayedYear}-${pad(this.displayedMonth)}-${pad(day)}`;
+                rows.push(this.$createElement('td', [this.genButton(date, true, 'date', this.formatter)]));
+    
+                if (rows.length % cellsInRow === 0) {
+                    children.push(this.genTR(rows));
+                    rows = [];
+        
+                    if (this.showWeek && (day < daysInCurrentMonth || this.showAdjacentMonths)) {
+                        rows.push(this.genWeekNumber(this.getWeekNumber((day + 7) > daysInCurrentMonth ? daysInCurrentMonth : (day + 7))));
+                    }
+                }
+            }
+
+            const nextMonthYear = this.displayedMonth === 12 ? this.displayedYear + 1 : this.displayedYear;
+            const nextMonth = this.displayedMonth === 12 ? 1 : this.displayedMonth + 1;
+            let nextMonthDay = 1;
+
+            while (rows.length < cellsInRow) {
+                const date = `${nextMonthYear}-${pad(nextMonth)}-${pad(nextMonthDay++)}`;
+                rows.push(this.$createElement('td', this.showAdjacentMonths ? [this.genButton(date, true, 'date', this.formatter, true)] : []));
+            }
+    
+            if (rows.length) {
+                children.push(this.genTR(rows));
+            }
+    
+            return this.$createElement('tbody', children);
+        },
+    }
+};
+
+var VHijriDatePickerYearItems = {
+    extends: VDatePickerYears,
+    computed: {
+        formatter() {
+            return this.format || createFormatter('year', this.currentLocale);
+        }
+    },
+};
 
 function sanitizeDateString(dateString, type) {
     const [year, month = 1, date = 1] = dateString.split("-");
@@ -24,7 +188,7 @@ function sanitizeDateString(dateString, type) {
     );
 }
 
-export default {
+var VHijriDatePicker = {
     extends: VDatePicker,
     name: "VHijriDatePicker",
     props: {
@@ -55,8 +219,8 @@ export default {
                     return this.pickerDate;
                 }
 
-                const multipleValue = wrapInArray(this.value)
-                const date = multipleValue[multipleValue.length - 1] || (typeof this.showCurrent === 'string' ? this.showCurrent : `${now.hy}-${now.hm}`)
+                const multipleValue = wrapInArray(this.value);
+                const date = multipleValue[multipleValue.length - 1] || (typeof this.showCurrent === 'string' ? this.showCurrent : `${now.hy}-${now.hm}`);
                 return sanitizeDateString(date, this.type === 'date' ? 'month' : 'year');
             })(),
         };
@@ -101,7 +265,7 @@ export default {
         },
 
         defaultTitleDateFormatter() {
-            const titleDateFormatter = createFormatter(this.type, this.currentLocale)
+            const titleDateFormatter = createFormatter(this.type, this.currentLocale);
     
             const landscapeFormatter = date => titleDateFormatter(date).replace(/([^\d\s])([\d])/g, (match, nonDigit, digit) => `${nonDigit} ${digit}`).replace(', ', ',<br>');
     
@@ -286,4 +450,6 @@ export default {
             }
         },
     }
-}
+};
+
+export default VHijriDatePicker;
