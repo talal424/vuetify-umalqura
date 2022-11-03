@@ -4,6 +4,8 @@ import { pad, createItemTypeListeners } from 'vuetify/lib/components/VDatePicker
 import isDateAllowed from 'vuetify/lib/components/VDatePicker/util/isDateAllowed';
 import { wrapInArray } from 'vuetify/lib/util/helpers';
 
+umalqura.locale('en');
+
 function createFormatter(type, locale) {
     return dateString => {
         const [year, month, date] = dateString.trim().split(' ')[0].split('-');

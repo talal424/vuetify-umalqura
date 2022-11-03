@@ -12,6 +12,8 @@ import VHijriDatePickerYearItems from './VHijriDatePickerYearItems'
 
 import { createFormatter, pad, createItemTypeListeners, daysInMonth, wrapInArray } from './util';
 
+umalqura.locale('en');
+
 function sanitizeDateString(dateString, type) {
     const [year, month = 1, date = 1] = dateString.split("-");
     return `${year}-${pad(month)}-${pad(date)}`.substr(
