@@ -244,11 +244,11 @@ var VHijriDatePicker = {
         },
 
         minMonth() {
-            return this.min ? sanitizeDateString(this.min, 'month') : umalqura.min.format('MM-yyyy');
+            return this.min ? sanitizeDateString(this.min, 'month') : umalqura.min.format('yyyy-MM');
         },
       
         maxMonth() {
-            return this.max ? sanitizeDateString(this.max, 'month') : umalqura.max.subtract(1,'year').format('MM-yyyy');
+            return this.max ? sanitizeDateString(this.max, 'month') : umalqura.max.subtract(1,'year').format('yyyy-MM');
         },
       
         minYear() {
