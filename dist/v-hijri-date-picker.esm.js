@@ -244,21 +244,21 @@ var VHijriDatePicker = {
         },
 
         minMonth() {
-            return this.min ? sanitizeDateString(this.min, 'month') : umalqura.min.format('yyyy-MM');
+            return this.min ? sanitizeDateString(this.min, 'month') : umalqura.min.format('yyyy-MM', 'en');
         },
       
         maxMonth() {
-            return this.max ? sanitizeDateString(this.max, 'month') : umalqura.max.subtract(1,'year').format('yyyy-MM');
+            return this.max ? sanitizeDateString(this.max, 'month') : umalqura.max.subtract(1,'year').format('yyyy-MM', 'en');
         },
       
         minYear() {
-            return this.min ? sanitizeDateString(this.min, 'year') : umalqura.min.format('yyyy');
+            return this.min ? sanitizeDateString(this.min, 'year') : umalqura.min.format('yyyy', 'en');
         },
       
         maxYear() {
-            return this.max ? sanitizeDateString(this.max, 'year') : umalqura.max.subtract(1,'year').format('yyyy')
+            return this.max ? sanitizeDateString(this.max, 'year') : umalqura.max.subtract(1,'year').format('yyyy', 'en');
         },
-      
+
         formatters() {
             return {
                 year: createFormatter('year', this.currentLocale),
